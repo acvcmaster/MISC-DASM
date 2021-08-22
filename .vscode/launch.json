@@ -12,7 +12,9 @@
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/bin/Debug/net6.0/MISC-DASM.dll",
             "args": [
-                "-i", "${workspaceFolder}/Examples/Fibonacci/fib.bin"
+                "-i", "${workspaceFolder}/Examples/Fibonacci/fib.bin",
+                "-h", "-s",
+                "-o", "output.misc",
             ],
             "cwd": "${workspaceFolder}",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using CommandLine;
 
 namespace MISC_DASM
@@ -11,6 +12,12 @@ namespace MISC_DASM
 
         [Option('o', "output", Required = false, HelpText = "Set the output file.")]
         public string OutputFile { get; set; }
+
+        [Option('h', "hide-addresses", Required = false, HelpText = "Hides instruction addresses when disassembling.")]
+        public bool HideAddresses { get; set; }
+
+        [Option('s', "show-output", Required = false, HelpText = "When writing to a file, prints the output to the console.")]
+        public bool ShowOutput { get; set; }
     }
 
     class Program
@@ -38,14 +45,35 @@ namespace MISC_DASM
 
                     fixed (byte* start = buffer)
                     {
+                        var output = new StringBuilder();
+
                         for (int i = 0; i < buffer.Length; i += sizeof(Instruction))
                         {
                             var instruction = *((Instruction*)(start + i));
-                            Console.WriteLine($"[0x{i.ToString("X").PadLeft(4, '0')}] {instruction.Disassemble()}");
+
+                            if (!options.HideAddresses)
+                                output.Append($"[0x{i.ToString("X").PadLeft(4, '0')}] {instruction.Disassemble()}\n");
+                            else
+                                output.Append($"{instruction.Disassemble()}\n");
 
                             if ((i / 4 + 1) % 4 == 0)
-                                Console.WriteLine();
+                                output.Append('\n');
                         }
+
+                        if (options.OutputFile != null)
+                        {
+                            try
+                            {
+                                using (var writer = new StreamWriter(options.OutputFile))
+                                    writer.Write(output);
+                                
+                                if (options.ShowOutput)
+                                    Console.Write(output);
+                            }
+                            catch { Console.WriteLine("Could not write data to file. An error has occurred."); }
+                        }
+                        else
+                            Console.Write(output);
                     }
                 });
         }
