@@ -41,6 +41,10 @@ namespace MISC_DASM
                         for (int i = 0; i < buffer.Length; i += sizeof(Instruction))
                         {
                             var instruction = *((Instruction*)(start + i));
+                            Console.WriteLine($"[0x{i.ToString("X").PadLeft(4, '0')}] {instruction.Disassemble()}");
+
+                            if ((i / 4 + 1) % 4 == 0)
+                                Console.WriteLine();
                         }
                     }
                 });
